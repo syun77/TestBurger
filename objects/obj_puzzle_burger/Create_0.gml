@@ -1,106 +1,113 @@
-/// @description Insert description here
-// You can write your code in this editor
+/// @description 生成.
 
 #macro PUZZLE_BURGER_COLOR_NONE (c_black)
 
-// tile type.
+// タイル種別.
 enum ePuzzleBurgerTile {
-	None = 0,
-	Red,
-	Green,
-	Blue,
+	None = 0, // なし.
+	Red,      // 赤タイル.
+	Green,    // 緑タイル.
+	Blue,     // 青タイル.
 };
 
-// line type
+// ライン種別
 enum ePuzzleBurgerLine {
-	None          = 0x00,
-	Horizontal    = 0x01,
-	Vertical      = 0x02,
-	Cross         = 0x04,
-	CrossLeft     = 0x04,
-	CrossTop      = 0x08,
-	CrossRight    = 0x10,
-	CrossBottom   = 0x20,
+	None          = 0x00, // なし.
+	Horizontal    = 0x01, // 横方向へ接続する線.
+	Vertical      = 0x02, // 縦方向に接続する線.
+	Cross         = 0x04, // 十字IDの開始.
+	CrossLeft     = 0x04, // 十字 (左に接続).
+	CrossTop      = 0x08, // 十字 (上に接続).
+	CrossRight    = 0x10, // 十字 (右に接続).
+	CrossBottom   = 0x20, // 十字 (下に接続).
 };
 
 
-// answer type.
+// 答え種.
 enum ePuzzleBurgerAnswer {
-	None,
-	Open,
-	Incorrect,
-	Correct,
+	None,      // なし.
+	Open,      // 判定中.
+	Incorrect, // 不正解.
+	Correct,   // 正解.
 };
 
+// 方向.
 enum ePuzzleBurgerDir {
-	None   = -1,
+	None   = -1, // なし.
 	
-	Left   = 0,
-	Top    = 1,
-	Right  = 2,
-	Bottom = 3,
+	Left   = 0,  // 左.
+	Top    = 1,  // 上.
+	Right  = 2,  // 右.
+	Bottom = 3,  // 下.
 	
 	Max,
 };
 
+// タップ状態.
 enum ePuzzleBurgerTapState {
-	None,
-	Tapping,
+	None,    // 操作なし.
+	Tapping, // スワイプ中.
 };
 
+// 状態.
 enum ePuzzleBurgerState {
-	Main,
-	Completed,
-	End,
+	Main,      // メインゲーム中.
+	Completed, // ゲームクリア.
+	End,       // 終了.
 };
 
-// user events.
+// ユーザー定義イベント.
 enum ePuzzleBurgerUser {
-	CalculateCorrect = 0,
+	CalculateCorrect = 0,  // 正解判定.
 	
-	Main             = 1,
-	Completed        = 2,
+	Main             = 1,  // メインゲーム.
+	Completed        = 2,  // ゲームクリア.
 	
-	Init             = 14,
-	CreateQuestion   = 15,
+	Init             = 14, // 初期化.
+	CreateQuestion   = 15, // 問題作成.
 };
 
-// properties.
+// プロパティ.
 #region
-_ofs_x = 256;
-_ofs_y = 64;
-_size  = 96;
-_grid_w = 10;
-_grid_h = 6;
+_ofs_x  = 256; // ゲームエリアの左上座標(X).
+_ofs_y  = 64;  // ゲームエリアの左上座標(Y).
+_size   = 96;  // 1つあたりのタイルのサイズ.
+_grid_w = 10;  // フィールドの幅.
+_grid_h = 6;   // フィールドの高さ.
 
-_color_red       = c_red;
-_color_green     = c_green;
-_color_blue      = c_blue;
-_color_selected  = c_yellow;
-_color_correct   = c_aqua;
-_color_incoreect = c_red;
+// 色定数.
+_color_red       = c_red;    // 赤タイルの色.
+_color_green     = c_green;  // 緑タイルの色.
+_color_blue      = c_blue;   // 青タイルの色.
+_color_selected  = c_yellow; // ラインを引く場所を選択しているときの色.
+_color_correct   = c_aqua;   // 正解時のラインの色.
+_color_incoreect = c_red;    // 不正解時のラインの色.
 #endregion
 
-_stage = 1;
+_stage = 1; // ステージ数.
 _state = ePuzzleBurgerState.Main;
 _cnt = 0;
-_completed = false;
+_completed = false; // ゲームクリアしたかどうか.
 
-// grid.
-_grid        = ds_grid_create(_grid_w, _grid_h);
-_grid_line   = ds_grid_create(_grid_w, _grid_h);
-_grid_answer = ds_grid_create(_grid_w, _grid_h);
-_line_list = new MyList();
+// グリッド.
+_grid        = ds_grid_create(_grid_w, _grid_h); // タイル.
+_grid_line   = ds_grid_create(_grid_w, _grid_h); // タイル接続情報.
+_grid_answer = ds_grid_create(_grid_w, _grid_h); // 正解判定情報.
+_line_list   = new MyList(); // 接続先選択中 (ePuzzleBurgerTapState.Tap) のライン情報.
 
 _tap = ePuzzleBurgerTapState.None;
-_start_idx_x = noone;
-_start_idx_y = noone;
+_start_idx_x = noone; // 接続開始座標(X).
+_start_idx_y = noone; // 接続開始座標(Y)
+_can_put     = false; // ラインを設定できるかどうか (タップ中に使用する)
 
 // create question.
 event_user(ePuzzleBurgerUser.CreateQuestion);
 
 // functions.
 
+/// @description 座標指定でタイル情報を取得.
+/// @param i,j position.
+/// @return タイル種別 (ePuzzleBurgerTile).
 _get_tile_type = function(i, j) {
 	if(i < 0 || _grid_w <= i || j < 0 || _grid_h <= j) {
 		return ePuzzleBurgerTile.None;
@@ -108,7 +115,10 @@ _get_tile_type = function(i, j) {
 	
 	return _grid[# i, j];
 }
-// 
+
+/// @description 座標指定でタイルの色を取得
+/// @param i,j position
+/// @return タイルの色.
 _get_tile_color = function(i, j) {
 	var v = _get_tile_type(i, j);
 	switch(v) {
@@ -138,6 +148,9 @@ _invert_dir = function(dir) {
 	}
 };
 
+/// @description 方向を十字定数に変換
+/// @param idx 方向 (ePuzzleBurgerDir)
+/// @return 十字定数 (ePuzzleBurgerLine.Cross[Left/Top/Right/Bottom])
 _dir_to_line_cross = function(dir) {
 	switch(dir) {
 	case ePuzzleBurgerDir.Left:   return ePuzzleBurgerLine.CrossLeft;
@@ -148,10 +161,17 @@ _dir_to_line_cross = function(dir) {
 	}
 };
 
+/// @description 指定の座標が十字ラインかどうか.
+/// @param i,j position
+/// @return いずれかの十字ラインであれば true.
 _is_line_cross = function(i, j) {
 	var t = _get_line_type(i, j);
 	return t >= ePuzzleBurgerLine.Cross;
 };
+	
+/// @description 指定の座標にラインを接続できるかどうか.
+/// @param i,j position
+/// @return 接続できれば true.
 _can_connect_line = function(i, j) {
 	var t = _get_line_type(i, j);
 	switch(t) {
@@ -197,6 +217,10 @@ _for_each_line_around = function(i, j, func) {
 	}
 };
 
+/// @description 指定の方向に対応する十字の方向を追加する
+/// @param i,j position
+/// @param idx 方向 (ePuzzleBurgerDir)
+/// @param t   Horizontal or Vertical
 _set_line_cross_from_around = function(i, j, idx, t) {
 	var v = _get_tile_color(i, j);
 	if(v == PUZZLE_BURGER_COLOR_NONE) {
@@ -227,6 +251,10 @@ _set_line_cross_from_around = function(i, j, idx, t) {
 	}
 };
 
+/// @description タイル種別と方向に基づいてラインを設定する
+/// @param i,j       position
+/// @param tile_type タイル種別 (ePuzzleBurgerTile)
+/// @param dir       方向 (ePuzzleBurgerDir)
 _set_line = function(i, j, tile_type, dir) {
 	var v = _get_tile_color(i, j);
 	if(v != PUZZLE_BURGER_COLOR_NONE) {
@@ -238,11 +266,13 @@ _set_line = function(i, j, tile_type, dir) {
 		_grid_line[# i, j] = tile_type;
 		switch(tile_type) {
 		case ePuzzleBurgerLine.Horizontal:
+			// 左右に接続する.
 			_set_line_cross_from_around(i-1, j, ePuzzleBurgerDir.Right, tile_type);
 			_set_line_cross_from_around(i+1, j, ePuzzleBurgerDir.Left,  tile_type);
 			break;
 			
 		case ePuzzleBurgerLine.Vertical:
+			// 上下に接続する.
 			_set_line_cross_from_around(i, j-1, ePuzzleBurgerDir.Bottom, tile_type);
 			_set_line_cross_from_around(i, j+1, ePuzzleBurgerDir.Top,    tile_type);
 			break;
@@ -277,27 +307,37 @@ _get_answer_type = function(i, j) {
 	return _grid_answer[# i, j];
 };
 
+/// @description インデックス座標系をワールド座標系に変換(X). 
 _get_x = function(i) {
 	return _ofs_x + (_size * i);
 };
+/// @description インデックス座標系をワールド座標系に変換(Y). 
 _get_y = function(j) {
 	return _ofs_y + (_size * j);
 };
+/// @description インデックス座標系をワールド座標系中心座標に変換(X).
 _get_cx = function(i) {
 	return _get_x(i) + _size/2;
 };
+/// @description インデックス座標系をワールド座標系中心座標に変換(Y).
 _get_cy = function(j) {
 	return _get_y(j) + _size/2;
 };
+/// @description ワールド座標をインデックス座標系に変換(X).
 _to_idx_x = function(px) {
 	var idx = floor((px - _ofs_x) / _size);
 	return (idx < _grid_w) ? idx : -1;
 };
+/// @description ワールド座標をインデックス座標系に変換(Y).
 _to_idx_y = function(py) {
 	var idx = floor((py - _ofs_y) / _size);
 	return (idx < _grid_h) ? idx : -1;
 };
-_can_put = false;
+
+/// @description ラインを引ける開始座標と終了座標かどうか.
+/// @param sx,sy 開始座標.
+/// @param ex,ey 終了座標.
+/// @return 引くことができれば true
 _can_put_idx = function(sx, sy, ex, ey) {
 	if(sx < 0 or sy < 0 or ex < 0 or ey < 0) {
 		return false;
@@ -315,6 +355,9 @@ _can_put_idx = function(sx, sy, ex, ey) {
 	return true;
 };
 
+/// @description ラインを配置 (MyPoint構造体を使用)
+/// @param p1 開始座標(MyPoint).
+/// @param p2 終了座標(MyPoint).
 _put_line = function(p1, p2) {
 	var px = p1._x;
 	var py = p1._y;
@@ -332,6 +375,9 @@ _put_line = function(p1, p2) {
 	}
 };
 
+/// @description 指定の座標がラインリスト(仮置のライン)に接触するかどうか
+/// @param i,j position
+/// @return 接触していたら(配置できないなら) true
 _is_hit_line_list = function(i, j) {
 	if(_line_list.size() < 2) {
 		return false;
@@ -356,6 +402,9 @@ _is_hit_line_list = function(i, j) {
 	return false;
 };
 
+/// @description 指定座標の十字を消去できるかどうか.
+/// @param i,j position.
+/// @return 去できる場合 true
 _can_erase_cross = function(i, j) {
 	var x_tbl = [-1,  0, 1, 0];
 	var y_tbl = [ 0, -1, 0, 1];
@@ -410,6 +459,10 @@ _can_erase_cross = function(i, j) {
 	return  true;
 };
 
+/// @description 指定座標のラインを消去する.
+/// @param i,j       position.
+/// @param tile_type タイル種別 (ePuzzleBurgerTile)
+/// @param dir       方向 (ePuzzleBurgerDir)
 _erase_line = function(i, j, line_type, dir) {
 	var v = _get_line_type(i, j);
 	if(v == ePuzzleBurgerLine.None) {

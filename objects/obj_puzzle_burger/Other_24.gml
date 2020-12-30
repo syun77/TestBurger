@@ -1,4 +1,4 @@
-/// @description Init.
+/// @description 初期化.
 _cnt = 0;
 _completed = false;
 _tap = ePuzzleBurgerTapState.None;

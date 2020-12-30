@@ -1,4 +1,4 @@
-/// @description draw debug
+/// @description デバッグ描画.
 draw_text(128, 8, "STAGE: " + string(_stage));
 
 draw_text(8, 8, "can put:" + (_can_put ? "true" : "false"));

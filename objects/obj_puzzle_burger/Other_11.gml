@@ -1,4 +1,4 @@
-/// @description Main.
+/// @description メインゲーム.
 switch(_tap) {
 case ePuzzleBurgerTapState.None:
 	if(mouse_check_button_pressed(mb_left)) {

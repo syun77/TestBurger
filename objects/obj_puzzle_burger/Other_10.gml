@@ -1,4 +1,4 @@
-/// @description Calculate Correct.
+/// @description 正解判定.
 ds_grid_clear(_grid_answer, ePuzzleBurgerAnswer.None);
 
 _cnt_red   = 0;

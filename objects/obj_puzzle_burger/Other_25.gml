@@ -1,18 +1,21 @@
-/// @description Create Question.
+/// @description 問題作成.
 
+// 配置テスト用の定数.
 enum ePuzzleBurgerTest {
-	None,
-	Open,
-	Corner,
-	Red,
-	Green,
-	Blue,
+	None,   // なし.
+	Open,   // 計算中.
+	Corner, // 角.
+	Red,    // 赤タイル.
+	Green,  // 緑タイル.
+	Blue,   // 青タイル.
 };
 
 // initialize.
 event_user(ePuzzleBurgerUser.Init);
 
-
+/// --------------------------------------
+/// @description タイル生成数.
+/// --------------------------------------
 var get_count = function() {
 	if(_stage < 3) {
 		return _stage;
@@ -22,6 +25,12 @@ var get_count = function() {
 	}
 };
 
+/// --------------------------------------
+/// @description 配置可能かどうか.
+/// @param grid  計算用グリッド
+/// @param i,j   position
+/// @param dx,dy 移動方向
+/// --------------------------------------
 var check_walk = function(grid, i, j, dx, dy) {
 	var sx = i;
 	var sy = j;
@@ -51,7 +60,17 @@ var check_walk = function(grid, i, j, dx, dy) {
 	return true;
 };
 
+/// --------------------------------------
+/// @description 配置可能な場所を調べる。配置座標は p_list に格納される.
+/// @param check_walk チェック関数
+/// @param grid       計算用グリッド
+/// @param i,j        position
+/// @param p_list     結果を格納する座標リスト.
+/// @param distance   距離.
+/// @return 配置可能な場所を見つけたら、p_listに座標を設定し true を返す.
+/// --------------------------------------
 var search = function(check_walk, grid, i, j, p_list, distance) {
+	// ランダムな方向を取得する
 	var rnd_dir = function(v) {
 		if(v < 0) { v = 1; }
 	
@@ -77,6 +96,7 @@ var search = function(check_walk, grid, i, j, p_list, distance) {
 		return [dx, dy];
 	};
 	
+	// p_listの中に(i, j)に一致する座標が存在するかどうかをチェックする.
 	var p_list_exists = function(p_list, i, j) {
 		for(var idx = 0; idx < p_list.size(); idx++) {
 			var p = p_list.get(idx);
@@ -87,6 +107,7 @@ var search = function(check_walk, grid, i, j, p_list, distance) {
 		return false;
 	}
 	
+	// // 探索制限回数.
 	var limit = 30;
 	
 	for(var idx = 0; idx < 2; idx++) {
@@ -113,6 +134,14 @@ var search = function(check_walk, grid, i, j, p_list, distance) {
 	return true;
 };
 
+/// --------------------------------------
+/// @description タイルを配置する.
+/// @param grid       計算用グリッド
+/// @param i,j        position
+/// @param ex,ey      終了座標.
+/// @param tile       終端に配置するタイルの種類.
+/// @return 配置可能な場所を見つけたら、p_listに座標を設定し true を返す.
+/// --------------------------------------
 var put_tile = function(grid, i, j, ex, ey, tile) {
 	var sx = i;
 	var sy = j;
@@ -132,12 +161,13 @@ var put_tile = function(grid, i, j, ex, ey, tile) {
 	grid[# ex, ey] = tile;
 }
 
+// 計算用 grid の生成.
 var grid = ds_grid_create(_grid_w, _grid_h);
 var p_list = new MyList();
 var cnt = get_count();
 var distance = cnt;
 if(distance > 4) {
-	distance = 4;
+	distance = 4; // 4を超える距離を設定しない.
 }
 
 for(var idx = 0; idx < cnt; idx++) {
@@ -164,6 +194,7 @@ for(var idx = 0; idx < cnt; idx++) {
 	}
 }
 
+// gridの情報をもとに _gridに設定する
 for(var j = 0; j < _grid_h; j++) {
 	for(var i = 0; i < _grid_w; i++) {
 		switch(grid[# i, j]) {

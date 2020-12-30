@@ -1,13 +1,12 @@
-/// @description Insert description here
-// You can write your code in this editor
+/// @description 描画.
 /// -------------------------------------------------------
-/// @description draw outline
+/// @description ラインの描画(アウトラインを含む).
 /// @param i
 /// @param j
-/// @param is_horizontal
-/// @param dir
-/// @param color
-/// @param alpha
+/// @param is_horizontal 
+/// @param dir           方向(ePuzzleBurgerDir)
+/// @param color         色.
+/// @param alpha         アルファ値.
 /// -------------------------------------------------------
 _draw_outline_idx = function(i, j, is_horizontal, dir, color, alpha) {
 	var thin = 4;
@@ -91,12 +90,13 @@ var idx_y = _to_idx_y(mouse_y);
 var is_valid_idx = _can_put_idx(_start_idx_x, _start_idx_y, idx_x, idx_y);
 
 /// -------------------------------------------------------
-/// @description draw line.
-/// @param sx
-/// @param sy
-/// @param idx_x
-/// @param color
-/// @param dont_line_check
+/// @description 接続するラインを描画する.
+/// @param sx              開始座標(X).
+/// @param sy              開始座標(Y).
+/// @param idx_x           終了座標(X).
+/// @param idx_y           終了座標(Y).
+/// @param color           色.
+/// @param dont_line_check ラインリスト(仮置のライン)との接触判定を行わないかどうか.
 /// -------------------------------------------------------
 var draw_connect_line = function(sx, sy, idx_x, idx_y, color, dont_line_check) {
 	
@@ -183,6 +183,6 @@ if(idx_x >= 0 and idx_y >= 0) {
 switch(_state) {
 case ePuzzleBurgerState.Completed:
 	fill_rect2(0, 440, display_get_gui_width(), 80, c_white, 0.2);
-	draw_text(480, 360, "COMPLETED!");
+	draw_text(480, 480, "COMPLETED!");
 	break;
 }
