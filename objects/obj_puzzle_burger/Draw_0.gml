@@ -176,3 +176,13 @@ if(idx_x >= 0 and idx_y >= 0) {
 	fill_rect2(px, py, _size, _size, c_white, alpha);
 }
 
+
+/// -------------------------------------------------------
+/// @description UI
+/// -------------------------------------------------------
+switch(_state) {
+case ePuzzleBurgerState.Completed:
+	fill_rect2(0, 440, display_get_gui_width(), 80, c_white, 0.2);
+	draw_text(480, 360, "COMPLETED!");
+	break;
+}

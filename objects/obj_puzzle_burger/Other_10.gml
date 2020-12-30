@@ -114,3 +114,25 @@ for(var j = 0; j < _grid_h; j++) {
 
 reset_search();
 delete _tmp_list;
+
+/// -------------------------------------------------------
+/// @description check completed.
+/// -------------------------------------------------------
+var check_completed = function() {
+	for(var j = 0; j < _grid_h; j++) {
+		for(var i = 0; i < _grid_w; i++) {
+			if(_get_tile_type(i, j) != ePuzzleBurgerTile.None) {
+				if(_get_answer_type(i, j) != ePuzzleBurgerAnswer.Correct) {
+					return false;
+				}
+			}
+		}
+	}
+	
+	return true;
+}
+
+if(check_completed()) {
+	// completed!
+	_completed = true;
+}

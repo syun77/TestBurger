@@ -59,11 +59,13 @@ enum ePuzzleBurgerUser {
 	CalculateCorrect = 0,
 	Main             = 1,
 	Completed        = 2,
+	CreateQuestion   = 15,
 };
 
 // properties.
+#region
 _ofs_x = 256;
-_ofs_y = 96;
+_ofs_y = 64;
 _size  = 96;
 _grid_w = 10;
 _grid_h = 6;
@@ -74,6 +76,7 @@ _color_blue      = c_blue;
 _color_selected  = c_yellow;
 _color_correct   = c_aqua;
 _color_incoreect = c_red;
+#endregion
 
 _cnt = 0;
 _state = ePuzzleBurgerState.Main;
@@ -89,20 +92,8 @@ _tap = ePuzzleBurgerTapState.None;
 _start_idx_x = noone;
 _start_idx_y = noone;
 
-// test data.
-_grid[# 6, 3] = ePuzzleBurgerTile.Red;
-_grid[# 4, 4] = ePuzzleBurgerTile.Green;
-_grid[# 2, 0] = ePuzzleBurgerTile.Blue;
-_grid[# 2, 3] = ePuzzleBurgerTile.Red;
-_grid[# 5, 3] = ePuzzleBurgerTile.Green;
-_grid[# 6, 4] = ePuzzleBurgerTile.Blue;
-_grid[# 0, 0] = ePuzzleBurgerTile.Red;
-_grid[# 5, 5] = ePuzzleBurgerTile.Green;
-_grid[# 0, 5] = ePuzzleBurgerTile.Blue;
-
-_grid[# 3, 5] = ePuzzleBurgerTile.Red;
-_grid[# 4, 2] = ePuzzleBurgerTile.Green;
-_grid[# 1, 4] = ePuzzleBurgerTile.Blue;
+// create question.
+event_user(ePuzzleBurgerUser.CreateQuestion);
 
 // functions.
 
