@@ -1,4 +1,6 @@
 /// @description draw debug
+draw_text(128, 8, "STAGE: " + string(_stage));
+
 draw_text(8, 8, "can put:" + (_can_put ? "true" : "false"));
 
 for(var j = 0; j < _grid_h; j++) {

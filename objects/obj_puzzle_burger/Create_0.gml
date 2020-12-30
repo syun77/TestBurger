@@ -57,8 +57,11 @@ enum ePuzzleBurgerState {
 // user events.
 enum ePuzzleBurgerUser {
 	CalculateCorrect = 0,
+	
 	Main             = 1,
 	Completed        = 2,
+	
+	Init             = 14,
 	CreateQuestion   = 15,
 };
 
@@ -78,8 +81,9 @@ _color_correct   = c_aqua;
 _color_incoreect = c_red;
 #endregion
 
-_cnt = 0;
+_stage = 1;
 _state = ePuzzleBurgerState.Main;
+_cnt = 0;
 _completed = false;
 
 // grid.
