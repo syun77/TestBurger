@@ -1,6 +1,19 @@
 /// @description Insert description here
 // You can write your code in this editor
-_draw_outline_idx = function(i, j, is_horizontal, color, alpha) {
+/// -------------------------------------------------------
+/// @description draw outline
+/// @param i
+/// @param j
+/// @param is_horizontal
+/// @param dir
+/// @param color
+/// @param alpha
+/// -------------------------------------------------------
+_draw_outline_idx = function(i, j, is_horizontal, dir, color, alpha) {
+	if(mouse_check_button(mb_right)) {
+		show_debug_message("hoge");
+	}
+	
 	var thin = 4;
 	var is_cross = _get_tile_color(i, j) != ePuzzleBurgerTile.None;
 	var px     = _get_x(i);
@@ -16,16 +29,16 @@ _draw_outline_idx = function(i, j, is_horizontal, color, alpha) {
 		fill_rect2(px, py+height-thin, width, thin, color, alpha);
 		fill_rect2(px+width-thin, py, thin, height, color, alpha);
 		var dir_rate = 4;
-		if(_is_line_left(i, j)) {
+		if(_is_line_left(i, j) or dir == ePuzzleBurgerDir.Left) {
 			fill_rect2(px, cy-thin, thin*dir_rate, thin*2, color, alpha);
 		}
-		if(_is_line_top(i, j)) {
+		if(_is_line_top(i, j) or dir == ePuzzleBurgerDir.Top) {
 			fill_rect2(cx-thin, py, thin*2, thin*dir_rate, color, alpha);
 		}
-		if(_is_line_right(i, j)) {
+		if(_is_line_right(i, j) or dir == ePuzzleBurgerDir.Right) {
 			fill_rect2(px+width-thin*dir_rate, cy-thin, thin*dir_rate, thin*2, color, alpha);
 		}
-		if(_is_line_bottom(i, j)) {
+		if(_is_line_bottom(i, j) or dir == ePuzzleBurgerDir.Bottom) {
 			fill_rect2(cx-thin, py+height-thin*dir_rate, thin*2, thin*dir_rate, color, alpha);
 		}
 	}
@@ -72,7 +85,7 @@ for(var j = 0; j < _grid_h; j++) {
 		var line_color = _get_line_color(i, j);
 		if(line_color != PUZZLE_BURGER_COLOR_NONE) {
 			var is_horizontal = (line_type == ePuzzleBurgerLine.Horizontal);
-			_draw_outline_idx(i, j, is_horizontal, line_color, 1);
+			_draw_outline_idx(i, j, is_horizontal, ePuzzleBurgerDir.None, line_color, 1);
 		}
 	}
 }
@@ -81,20 +94,20 @@ var idx_x = _to_idx_x(mouse_x);
 var idx_y = _to_idx_y(mouse_y);
 var is_valid_idx = _can_put_idx(_start_idx_x, _start_idx_y, idx_x, idx_y);
 
+/// -------------------------------------------------------
 /// @description draw line.
 /// @param sx
 /// @param sy
 /// @param idx_x
 /// @param color
 /// @param dont_line_check
+/// -------------------------------------------------------
 var draw_connect_line = function(sx, sy, idx_x, idx_y, color, dont_line_check) {
 	
-	if(mouse_check_button(mb_right)) {
-		show_debug_message("hoge");
-	}
+	var dir = _to_dir(idx_x - sx, idx_y - sy);
 	
 	// start point.
-	_draw_outline_idx(sx, sy, false, color, 1);
+	_draw_outline_idx(sx, sy, false, dir, color, 1);
 	
 	// horizontal.
 	while(sx != idx_x) {
@@ -105,14 +118,14 @@ var draw_connect_line = function(sx, sy, idx_x, idx_y, color, dont_line_check) {
 			return false;
 		}
 		if(_can_connect_line(sx, idx_y) == false) {
-			return false;
+			return false; // can't connect.
 		}
 		if(dont_line_check == false) {
 			if(_is_hit_line_list(sx, idx_y)) {
 				return false;
 			}
 		}
-		_draw_outline_idx(sx, idx_y, true, color, 1);
+		_draw_outline_idx(sx, idx_y, true, _invert_dir(dir), color, 1);
 	}
 	
 	// vertical.
@@ -124,14 +137,14 @@ var draw_connect_line = function(sx, sy, idx_x, idx_y, color, dont_line_check) {
 			return false;
 		}
 		if(_can_connect_line(idx_x, sy) == false) {
-			return false;
+			return false; // can't connect.
 		}
 		if(dont_line_check == false) {
 			if(_is_hit_line_list(idx_x, sy)) {
 				return false;
 			}
 		}
-		_draw_outline_idx(idx_x, sy, false, color, 1);
+		_draw_outline_idx(idx_x, sy, false, _invert_dir(dir), color, 1);
 	}
 	
 	return true;
@@ -148,7 +161,8 @@ if(_line_list.size() >= 2) {
 }
 else if(_line_list.size() == 1) {
 	var p = _line_list.get(0);
-	_draw_outline_idx(p._x, p._y, false, _color_selected, 1);
+	var dir = _to_dir(idx_x - p._x, idx_y - p._y);
+	_draw_outline_idx(p._x, p._y, false, dir, _color_selected, 1);
 }
 
 _can_put = false;
