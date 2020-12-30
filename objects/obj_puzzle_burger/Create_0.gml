@@ -100,6 +100,10 @@ _grid[# 0, 0] = ePuzzleBurgerTile.Red;
 _grid[# 5, 5] = ePuzzleBurgerTile.Green;
 _grid[# 0, 5] = ePuzzleBurgerTile.Blue;
 
+_grid[# 3, 5] = ePuzzleBurgerTile.Red;
+_grid[# 4, 2] = ePuzzleBurgerTile.Green;
+_grid[# 1, 4] = ePuzzleBurgerTile.Blue;
+
 // functions.
 
 _get_tile_type = function(i, j) {
@@ -153,6 +157,16 @@ _is_line_cross = function(i, j) {
 	var t = _get_line_type(i, j);
 	return t >= ePuzzleBurgerLine.Cross;
 };
+_can_connect_line = function(i, j) {
+	var t = _get_line_type(i, j);
+	switch(t) {
+	case ePuzzleBurgerLine.Horizontal:
+	case ePuzzleBurgerLine.Vertical:
+		return false;
+	default:
+		return true;
+	}
+}
 _is_line_left = function(i, j) {
 	var t = _get_line_type(i, j);
 	return t & ePuzzleBurgerLine.CrossLeft;
