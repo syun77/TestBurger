@@ -63,10 +63,10 @@ enum ePuzzleBurgerUser {
 
 // properties.
 _ofs_x = 256;
-_ofs_y = 64;
-_size  = 80;
-_grid_w = 7;
-_grid_h = 7;
+_ofs_y = 96;
+_size  = 96;
+_grid_w = 10;
+_grid_h = 6;
 
 _color_red       = c_red;
 _color_green     = c_green;

@@ -10,10 +10,6 @@
 /// @param alpha
 /// -------------------------------------------------------
 _draw_outline_idx = function(i, j, is_horizontal, dir, color, alpha) {
-	if(mouse_check_button(mb_right)) {
-		show_debug_message("hoge");
-	}
-	
 	var thin = 4;
 	var is_cross = _get_tile_color(i, j) != ePuzzleBurgerTile.None;
 	var px     = _get_x(i);
